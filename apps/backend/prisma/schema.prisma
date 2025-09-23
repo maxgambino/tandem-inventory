@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Restaurant {
+  id        String     @id @default(cuid())
+  name      String
+  country   String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  locations Location[]
+  products  Product[]
+  suppliers Supplier[]
+  stockMovements StockMovement[]
+  attributes Attribute[]
+}
+
+model Location {
+  id           String     @id @default(cuid())
+  name         String
+  memo         String?
+  restaurantId String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  products     Product[]
+  stockMovementsFrom StockMovement[] @relation("FromLoc")
+  stockMovementsTo   StockMovement[] @relation("ToLoc")
+}
+
+model Product {
+  id           String     @id @default(cuid())
+  name         String
+  sku          String?    @unique
+  barcode      String?
+  unit         String?
+  minStock     Int?
+  restaurantId String
+  locationId   String?
+  supplierId   String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  location     Location?  @relation(fields: [locationId], references: [id])
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  supplier     Supplier?  @relation(fields: [supplierId], references: [id])
+  stockMovements StockMovement[]
+  attributes   ProductAttribute[]
+}
+
+model Supplier {
+  id           String     @id @default(cuid())
+  name         String
+  email        String?
+  phone        String?
+  restaurantId String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  products     Product[]
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+}
+
+enum MovementType {
+  IN          // Entrée (réception, création de stock)
+  OUT         // Sortie (vente, perte)
+  ADJUSTMENT  // Ajustement inventaire (peut être + ou -)
+  TRANSFER    // Transfert entre sites
+}
+
+model StockMovement {
+  id             String       @id @default(cuid())
+  restaurantId   String
+  productId      String
+  type           MovementType
+  quantity       Float         // toujours positive; le sens est donné par 'type'
+  note           String?
+
+  // localisations (selon type)
+  fromLocationId String?
+  toLocationId   String?
+
+  restaurant     Restaurant   @relation(fields: [restaurantId], references: [id])
+  product        Product      @relation(fields: [productId], references: [id])
+  fromLocation   Location?    @relation("FromLoc", fields: [fromLocationId], references: [id])
+  toLocation     Location?    @relation("ToLoc",   fields: [toLocationId],   references: [id])
+
+  createdAt      DateTime     @default(now())
+
+  @@index([restaurantId, productId, type, createdAt])
+  @@index([fromLocationId])
+  @@index([toLocationId])
+}
+
+enum AttributeType {
+  TEXT
+  NUMBER
+  DATE
+  BARCODE
+  SELECTION
+}
+
+model Attribute {
+  id           String   @id @default(cuid())
+  restaurantId String
+  name         String        // ex: "Brand", "Color"
+  type         AttributeType // text, number, date, barcode
+  order        Int           @default(0) // ordre d'affichage
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  values       ProductAttribute[]
+
+  @@unique([restaurantId, name]) // pas de doublons par resto
+}
+
+model ProductAttribute {
+  id          String   @id @default(cuid())
+  productId   String
+  attributeId String
+  valueText   String?    // pour TEXT, BARCODE
+  valueNumber Float?     // pour NUMBER
+  valueDate   DateTime?  // pour DATE
+
+  product     Product   @relation(fields: [productId], references: [id])
+  attribute   Attribute @relation(fields: [attributeId], references: [id])
+
+  @@unique([productId, attributeId]) // un produit ne peut avoir qu'une valeur par attribut
+}
