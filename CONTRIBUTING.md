@@ -231,3 +231,5 @@ Tous les contributeurs sont listés dans le fichier [CONTRIBUTORS.md](CONTRIBUTO
 ---
 
 Merci de contribuer à Tandem ! 🚀
+
+
