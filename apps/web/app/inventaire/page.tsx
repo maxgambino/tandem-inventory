@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { Plus, Search, Package, ClipboardList, CheckCircle, AlertTriangle } from 'lucide-react'
-import { useApi } from '../../../lib/hooks/useApi'
-import { productsApi, Product } from '../../../lib/api'
+import { useApi } from '../../lib/hooks/useApi'
+import { productsApi, Product } from '../../lib/api'
 
 interface InventoryItem {
   id: string
