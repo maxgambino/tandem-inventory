@@ -349,9 +349,9 @@ export default function LocationsPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <div className="flex items-center space-x-2">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {location.quantity} articles
+                        {location.quantity || 0} articles
                       </span>
-                      {location.quantity > 0 && (
+                      {(location.quantity || 0) > 0 && (
                         <a
                           href={`/stock/articles?location=${location.id}`}
                           className="text-blue-600 hover:text-blue-800 text-xs"
