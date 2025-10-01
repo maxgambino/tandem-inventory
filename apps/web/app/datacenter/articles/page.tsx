@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { productsApi, attributesApi, Product, Attribute, ProductAttribute } from '@/lib/api';
+import { productsApi, attributesApi, Product, Attribute, ProductAttribute } from '../../lib/api';
 
 const RESTO_ID = process.env.NEXT_PUBLIC_RESTAURANT_ID || 'restaurant-1';
 
