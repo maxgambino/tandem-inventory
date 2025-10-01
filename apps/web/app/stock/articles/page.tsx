@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { stockApi, StockItem } from '../../lib/api';
+import { stockApi, StockItem } from '../../../lib/api';
 
 // ⚠️ provisoire : fixe ton restaurantId (ou viens le chercher via contexte / user)
 const RESTO_ID = process.env.NEXT_PUBLIC_RESTAURANT_ID || 'restaurant-1';
