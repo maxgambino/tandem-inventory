@@ -5,7 +5,7 @@ Write-Host "🔄 Migration des données SQLite vers PostgreSQL" -ForegroundColor
 Write-Host "`n🔍 Vérification de PostgreSQL..." -ForegroundColor Yellow
 try {
     $env:PGPASSWORD = "postgres"
-    $result = psql -h localhost -U postgres -d postgres -c "SELECT version();" 2>$null
+    psql -h localhost -U postgres -d postgres -c "SELECT version();" 2>$null
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ PostgreSQL accessible" -ForegroundColor Green
     } else {
@@ -18,7 +18,7 @@ try {
 
 # Sauvegarde des données SQLite existantes
 Write-Host "`n💾 Sauvegarde des données SQLite..." -ForegroundColor Yellow
-cd apps/backend
+Set-Location apps/backend
 
 if (Test-Path "dev.db") {
     Write-Host "✅ Fichier SQLite trouvé: dev.db" -ForegroundColor Green
@@ -96,6 +96,7 @@ try {
     if ($response.StatusCode -eq 200) {
         $products = $response.Content | ConvertFrom-Json
         Write-Host "✅ API fonctionnelle avec $($products.Count) produits" -ForegroundColor Green
+        $response = $null  # Nettoyer la variable
     }
 } catch {
     Write-Host "⚠️ API non accessible (backend peut-être arrêté)" -ForegroundColor Yellow

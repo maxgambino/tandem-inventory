@@ -5,7 +5,7 @@ Write-Host "🧪 Test rapide de PostgreSQL pour Tandem" -ForegroundColor Cyan
 Write-Host "`n🔍 Test de connexion PostgreSQL..." -ForegroundColor Yellow
 try {
     $env:PGPASSWORD = "postgres"
-    $result = psql -h localhost -U postgres -d postgres -c "SELECT version();" 2>$null
+    psql -h localhost -U postgres -d postgres -c "SELECT version();" 2>$null
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ PostgreSQL accessible" -ForegroundColor Green
     } else {
@@ -21,7 +21,7 @@ try {
 Write-Host "`n🗄️ Test de la base de données 'tandem'..." -ForegroundColor Yellow
 try {
     $env:PGPASSWORD = "postgres"
-    $result = psql -h localhost -U postgres -d tandem -c "SELECT COUNT(*) FROM \"Product\";" 2>$null
+    psql -h localhost -U postgres -d tandem -c "SELECT COUNT(*) FROM \"Product\";" 2>$null
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Base de données 'tandem' accessible" -ForegroundColor Green
     } else {
@@ -51,6 +51,7 @@ try {
     if ($response.StatusCode -eq 200) {
         $products = $response.Content | ConvertFrom-Json
         Write-Host "✅ API products accessible avec $($products.Count) produits" -ForegroundColor Green
+        $response = $null  # Nettoyer la variable
     }
 } catch {
     Write-Host "⚠️ API products non accessible" -ForegroundColor Yellow

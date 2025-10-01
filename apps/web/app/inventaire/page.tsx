@@ -3,7 +3,23 @@
 import { useState, useEffect } from 'react'
 import { Plus, Search, Package, ClipboardList, CheckCircle, AlertTriangle } from 'lucide-react'
 import { useApi } from '../../lib/hooks/useApi'
-import { productsApi, Product } from '../../lib/api'
+import { apiFetcher } from '../../lib/api'
+
+// Types temporaires pour la compatibilité
+interface Product {
+  id: string;
+  name: string;
+  sku?: string;
+  unit?: string;
+  location?: {
+    name: string;
+  };
+}
+
+// API temporaire
+const productsApi = {
+  getAll: () => apiFetcher('/products')
+};
 
 interface InventoryItem {
   id: string
@@ -33,7 +49,7 @@ export default function InventoryPage() {
         { expected: 25, counted: 25 }  // Terminé
       ]
       
-      const items: InventoryItem[] = products.map((product, index) => {
+      const items: InventoryItem[] = products.map((product: Product, index: number) => {
         const quantities = mockQuantities[index % mockQuantities.length]
         const variance = quantities.counted - quantities.expected
         
